@@ -1,0 +1,13 @@
+server:
+  port: 8001
+  servlet:
+    context-path: /spring-pageable-response-producer
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:customerdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect

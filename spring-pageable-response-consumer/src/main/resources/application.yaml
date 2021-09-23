@@ -1,0 +1,22 @@
+server:
+  port: 8002
+  servlet:
+    context-path: /spring-pageable-response-consumer
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:promocodedb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+
+external:
+  service:
+    customer:
+      get-customers-url: localhost:8001/spring-pageable-response-producer/v1/customers
+      get-customers-url-with-header: localhost:8001/spring-pageable-response-producer/v2/customers
+
+message:
+  sms: "Thank you for choosing us for over %s years! Use code %s to receive %s percent off your next purchase online or in-store. Sent to a number %s"
