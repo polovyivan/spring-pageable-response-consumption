@@ -9,10 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -30,7 +28,7 @@ public record CustomerServiceClient(ApplicationConfiguration applicationConfigur
                 .block();
     }
 
-    public ResponseEntity<List<CustomerClientResponse>> getCustomerListWithTotalPageHeader(Integer page, Integer size) {
+    public ResponseEntity<List<CustomerClientResponse>> getCustomerListWithTotalPagesHeader(Integer page, Integer size) {
         return WebClient.create().get()
                 .uri(builder -> builder.path(
                                 applicationConfiguration.getExternalServiceCustomerGetCustomersUrlWithHeader())
@@ -41,48 +39,4 @@ public record CustomerServiceClient(ApplicationConfiguration applicationConfigur
                 .toEntity(new ParameterizedTypeReference<List<CustomerClientResponse>>() {
                 }).block();
     }
-
-    public List<CustomerClientResponse> getCustomersFromAllPages() {
-        int currentPage = 0;
-        int limit = 50;
-        List<CustomerClientResponse> customersResponseCompleteCollection = new ArrayList<>();
-        CustomerClientPageableResponse customerClientPageableResponse;
-        do {
-            log.info("Getting customers from a page {} with a limit {}", currentPage, limit);
-            customerClientPageableResponse = getCustomers(currentPage++, limit);
-
-            List<CustomerClientResponse> customerClientResponseFromSinglePage = customerClientPageableResponse.getContent();
-
-            if (!CollectionUtils.isEmpty(customerClientResponseFromSinglePage)) {
-                customersResponseCompleteCollection.addAll(customerClientResponseFromSinglePage);
-            }
-        } while (customerClientPageableResponse.hasNext());
-
-        log.info("Received all customers from total of {} page(s)", customerClientPageableResponse.getTotalPages());
-        return customersResponseCompleteCollection;
-    }
-
-    public List<CustomerClientResponse> getCustomersFromAllPagesWithHeader() {
-        int currentPage = 0;
-        int limit = 50;
-        int totalPages;
-        List<CustomerClientResponse> customersResponseCompleteCollection = new ArrayList<>();
-        ResponseEntity<List<CustomerClientResponse>> responseEntity;
-        do {
-            log.info("Getting customers from a page {} with a limit {}", currentPage, limit);
-            responseEntity = getCustomerListWithTotalPageHeader(currentPage++, limit);
-
-            List<CustomerClientResponse> customerClientResponseFromSinglePage = responseEntity.getBody();
-
-            if (!CollectionUtils.isEmpty(customerClientResponseFromSinglePage)) {
-                customersResponseCompleteCollection.addAll(customerClientResponseFromSinglePage);
-            }
-            totalPages = responseEntity.getHeaders().get("total-pages").stream().findFirst()
-                    .map(Integer::parseInt).orElse(0);
-        } while (currentPage < totalPages);
-
-        log.info("Received all customers from total of {} page(s)", currentPage);
-        return customersResponseCompleteCollection;
-    }
-
 }

@@ -10,7 +10,6 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -23,14 +22,12 @@ public record CustomerService(CustomerRepository customerRepository) {
         PageRequest page = PageRequest.of(pageNumber, pageSize);
         Page<CustomerEntity> customerEntityPage = customerRepository.findAll(page);
 
-        Function<List<CustomerEntity>, List<CustomerResponse>> collectionTransform = x -> x.stream()
+        List<CustomerResponse> customerResponses = customerEntityPage.getContent().stream()
                 .map(CustomerResponse::valueOf).collect(
                         Collectors.toList());
 
         Page<CustomerResponse> customerResponsePage = PageableExecutionUtils.getPage(
-                collectionTransform.apply(customerEntityPage.getContent()),
-                page,
-                customerEntityPage::getTotalElements);
+                customerResponses, page, customerEntityPage::getTotalElements);
 
         return customerResponsePage;
     }
