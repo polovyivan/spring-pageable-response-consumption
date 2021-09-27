@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public record CustomerService(CustomerRepository customerRepository) {
 
     public Page<CustomerResponse> getAllCustomers(Integer pageNumber, Integer pageSize) {
-        log.info("Getting all customers from pageNumber {} with pageNumber pageSize {}", pageNumber, pageSize);
+        log.info("Getting all customers from a pageNumber {} with a pageSize {}", pageNumber, pageSize);
 
         PageRequest page = PageRequest.of(pageNumber, pageSize);
         Page<CustomerEntity> customerEntityPage = customerRepository.findAll(page);
